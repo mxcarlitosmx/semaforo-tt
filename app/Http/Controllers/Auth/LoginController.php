@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\Request; // Importante para recibir los datos de la sesión
 
 class LoginController extends Controller
 {
@@ -22,10 +23,12 @@ class LoginController extends Controller
 
     /**
      * Where to redirect users after login.
+     * 
+     * (Esta variable será ignorada porque el método authenticated toma el control)
      *
      * @var string
      */
-    protected $redirectTo = '/panel-admin';
+    protected $redirectTo = '/home';
 
     /**
      * Create a new controller instance.
@@ -36,5 +39,29 @@ class LoginController extends Controller
     {
         $this->middleware('guest')->except('logout');
         $this->middleware('auth')->only('logout');
+    }
+
+    /**
+     * El usuario ha sido autenticado.
+     * Aquí definimos el enrutamiento inteligente basado en roles.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  mixed  $user
+     * @return mixed
+     */
+    protected function authenticated(Request $request, $user)
+    {
+        // Si el usuario es administrador, lo mandamos a su panel
+        if ($user->role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        }
+
+        // Si es cualquier otro rol (operador), lo mandamos al panel de usuario
+        return redirect()->route('user.dashboard');
+    }
+
+    protected function loggedOut(Request $request)
+    {
+        return redirect()->route('login');
     }
 }

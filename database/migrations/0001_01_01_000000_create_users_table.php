@@ -12,13 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->rememberToken();
-            $table->timestamps();
+        $table->id(); // Crea el BIGINT PK
+        $table->string('name'); // VARCHAR(255)
+        $table->string('last_name')->nullable(); // VARCHAR(255)
+        $table->string('email')->unique(); // VARCHAR(255)
+        $table->timestamp('email_verified_at')->nullable(); // TIMESTAMP
+        $table->string('password'); // VARCHAR(255)
+        $table->enum('role', ['admin', 'user'])->default('user'); // ENUM
+        $table->rememberToken(); // VARCHAR(100)
+        $table->timestamps(); // Crea created_at y updated_at TIMESTAMP
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

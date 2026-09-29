@@ -2,43 +2,74 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
     public function index()
     {
-        // DATOS SIMULADOS: Simulamos los usuarios registrados en tu sistema
-        $usuarios = [
-            [
-                'id' => 1,
-                'name' => 'Carlos',
-                'last_name' => 'Hernández',
-                'email' => 'carlos.admin@tt1.com',
-                'role' => 'admin',
-                'is_active' => true,
-                'created_at' => '2026-08-10'
-            ],
-            [
-                'id' => 2,
-                'name' => 'Operador',
-                'last_name' => 'Turno Matutino',
-                'email' => 'operador1@tt1.com',
-                'role' => 'user',
-                'is_active' => true,
-                'created_at' => '2026-08-12'
-            ],
-            [
-                'id' => 3,
-                'name' => 'Operador',
-                'last_name' => 'Baja',
-                'email' => 'inactivo@tt1.com',
-                'role' => 'user',
-                'is_active' => false,
-                'created_at' => '2026-08-15'
-            ]
-        ];
-
+        $usuarios = User::all();
         return view('admin.users.index', compact('usuarios'));
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name'      => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email'     => 'required|string|email|max:255|unique:users',
+            'password'  => 'required|string|min:8',
+            'role'      => 'required|in:admin,user',
+        ]);
+
+        User::create([
+            'name'      => $request->name,
+            'last_name' => $request->last_name,
+            'email'     => $request->email,
+            'password'  => Hash::make($request->password),
+            'role'      => $request->role,
+        ]);
+
+        return redirect()->route('usuarios.index')->with('success', 'Usuario registrado correctamente.');
+    }
+
+    // MÉTODO PARA ACTUALIZAR (EDITAR)
+    public function update(Request $request, User $usuario)
+    {
+        $request->validate([
+            'name'      => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            // El unique ignora el email del usuario actual para que no marque error si no lo cambia
+            'email'     => 'required|string|email|max:255|unique:users,email,' . $usuario->id,
+            'role'      => 'required|in:admin,user',
+        ]);
+
+        $usuario->update([
+            'name'      => $request->name,
+            'last_name' => $request->last_name,
+            'email'     => $request->email,
+            'role'      => $request->role,
+        ]);
+
+        // Solo actualizamos la contraseña si el administrador escribió una nueva
+        if ($request->filled('password')) {
+            $usuario->update(['password' => Hash::make($request->password)]);
+        }
+
+        return redirect()->route('usuarios.index');
+    }
+
+    // MÉTODO PARA ELIMINAR
+    public function destroy(User $usuario)
+    {
+        // Seguridad: Evitar que el administrador se borre a sí mismo
+        if (auth()->id() === $usuario->id) {
+            return redirect()->route('usuarios.index');
+        }
+
+        $usuario->delete();
+        return redirect()->route('usuarios.index');
     }
 }

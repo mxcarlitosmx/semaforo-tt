@@ -22,7 +22,7 @@
             background-color: #243447; 
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
             border-bottom: 3px solid #3b5a9a;
-            min-height: 85px; /* Altura reforzada */
+            min-height: 85px; 
         }
 
         /* Estilos de las Tarjetas */
@@ -78,27 +78,23 @@
 <body>
 
     <!-- ========================================== -->
-    <!-- CABECERA (MÁS ALTA Y DISTRIBUIDA)          -->
+    <!-- CABECERA -->
     <!-- ========================================== -->
     <nav class="navbar navbar-dark navbar-custom py-4">
-        <!-- container-fluid con padding para mandar los elementos a los extremos -->
         <div class="container-fluid px-3 px-md-5">
             <div class="row w-100 align-items-center m-0">
                 
-                <!-- BLOQUE 1: LOGO (Completamente a la izquierda) -->
                 <div class="col-md-4 d-none d-md-flex justify-content-start align-items-center px-0">
                     <i class="bi bi-stoplights me-2 text-info fs-2"></i>
                     <span class="text-white fs-4 fw-bold">Sistema de Tráfico</span>
                 </div>
 
-                <!-- BLOQUE 2: BIENVENIDA (Centro exacto y en una sola línea) -->
                 <div class="col-6 col-md-4 d-flex justify-content-start justify-content-md-center align-items-center px-0">
                     <span class="text-white text-nowrap fs-3">
                         ¡Bienvenido, <strong>Admin!</strong>
                     </span>
                 </div>
 
-                <!-- BLOQUE 3: CERRAR SESIÓN -->
                 <div class="col-6 col-md-4 d-flex justify-content-end align-items-center px-0">
                     <a href="{{ route('logout') }}" 
                     class="btn btn-outline-light px-4 py-2"
@@ -106,7 +102,6 @@
                         Cerrar Sesión
                     </a>
 
-                    <!-- Formulario oculto que ejecuta el cierre de sesión seguro en Laravel -->
                     <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                         @csrf
                     </form>
@@ -117,7 +112,7 @@
     </nav>
 
     <!-- ========================================== -->
-    <!-- CONTENIDO PRINCIPAL                        -->
+    <!-- CONTENIDO PRINCIPAL -->
     <!-- ========================================== -->
     <div class="container py-5 mt-3">
         
@@ -131,15 +126,9 @@
         <div class="row g-4 justify-content-center">
             
             <!-- TARJETA 1: CREAR PROTOTIPO -->
-             
             <div class="col-12 col-md-6 col-lg-4">
-                <div class="card admin-card p-4 text-center position-relative">
-        
-                    <!-- Botón de ayuda (?) -->
+                <div class="card admin-card p-4 text-center position-relative h-100">
                     <button type="button" class="btn-help" data-bs-toggle="tooltip" data-bs-placement="top" title="Da de alta un nuevo semáforo en el mapa asignando su IP y ubicación.">?</button>
-                
-                    <!-- ENLACE A LA NUEVA VISTA -->
-                    <!-- text-decoration-none quita la línea del link y text-dark mantiene el color de la letra -->
                     <a href="{{ route('prototipo.crear') }}" class="text-decoration-none text-dark d-block mt-2">
                         <div class="card-body">
                             <i class="bi bi-plus-circle-dotted card-icon"></i>
@@ -147,19 +136,13 @@
                             <p class="card-text text-muted">Añadir una nueva intersección de tráfico a la red inteligente.</p>
                         </div>
                     </a>
-                    
                 </div>
             </div>
             
-
             <!-- TARJETA 2: MIS PROTOTIPOS -->
             <div class="col-12 col-md-6 col-lg-4">
-                <div class="card admin-card p-4 text-center position-relative">
-        
-                    <!-- Botón de ayuda (?) -->
+                <div class="card admin-card p-4 text-center position-relative h-100">
                     <button type="button" class="btn-help" data-bs-toggle="tooltip" data-bs-placement="top" title="Visualiza estados, fuerza cambios de luces o elimina semáforos activos.">?</button>
-                    
-                    <!-- ENLACE A LA VISTA DE LA TABLA -->
                     <a href="{{ route('prototipos.index') }}" class="text-decoration-none text-dark d-block mt-2">
                         <div class="card-body">
                             <i class="bi bi-sliders card-icon"></i>
@@ -167,17 +150,13 @@
                             <p class="card-text text-muted">Gestionar, editar y monitorear los semáforos activos en tiempo real.</p>
                         </div>
                     </a>
-        
                 </div>
             </div>
 
             <!-- TARJETA 3: GESTIÓN DE USUARIOS -->
             <div class="col-12 col-md-6 col-lg-4">
                 <div class="card admin-card p-4 text-center position-relative h-100">
-        
                      <button type="button" class="btn-help" data-bs-toggle="tooltip" data-bs-placement="top" title="Control de acceso: Agrega nuevos operadores de tránsito o modifica permisos.">?</button>
-        
-                    <!-- ENLACE A LA NUEVA VISTA -->
                     <a href="{{ route('usuarios.index') }}" class="text-decoration-none text-dark d-block mt-2">
                         <div class="card-body">
                             <i class="bi bi-people card-icon"></i>
@@ -185,7 +164,34 @@
                             <p class="card-text text-muted">Administrar cuentas, perfiles y accesos operativos del sistema.</p>
                         </div>
                     </a>
+                </div>
+            </div>
 
+            <!-- TARJETA 4: HISTORIAL DE OPERACIONES -->
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card admin-card p-4 text-center position-relative h-100">
+                     <button type="button" class="btn-help" data-bs-toggle="tooltip" data-bs-placement="top" title="Consulta la bitácora de auditoría: quién, cuándo y qué acción se realizó en la red.">?</button>
+                    <a href="{{ route('historial.index') }}" class="text-decoration-none text-dark d-block mt-2">
+                        <div class="card-body">
+                            <i class="bi bi-clock-history card-icon"></i>
+                            <h4 class="card-title fw-bold">Historial de Red</h4>
+                            <p class="card-text text-muted">Revisar la bitácora de acciones y eventos de los usuarios en el sistema.</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- TARJETA 5: DICCIONARIO PLN -->
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card admin-card p-4 text-center position-relative h-100">
+                     <button type="button" class="btn-help" data-bs-toggle="tooltip" data-bs-placement="top" title="Gestiona las palabras clave y los pesos semánticos que alimentan la inteligencia artificial.">?</button>
+                    <a href="{{ route('pln.index') }}" class="text-decoration-none text-dark d-block mt-2">
+                        <div class="card-body">
+                            <i class="bi bi-robot card-icon"></i>
+                            <h4 class="card-title fw-bold">Diccionario PLN</h4>
+                            <p class="card-text text-muted">Administrar el corpus semántico para la toma de decisiones del algoritmo.</p>
+                        </div>
+                    </a>
                 </div>
             </div>
 
@@ -193,7 +199,7 @@
     </div>
 
     <!-- ========================================== -->
-    <!-- SCRIPTS                                    -->
+    <!-- SCRIPTS -->
     <!-- ========================================== -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>

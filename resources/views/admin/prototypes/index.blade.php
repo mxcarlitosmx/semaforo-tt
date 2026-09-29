@@ -27,10 +27,9 @@
             border-radius: 15px;
             box-shadow: 0 8px 25px rgba(0,0,0,0.05);
             background-color: #ffffff;
-            overflow: hidden; /* Mantiene los bordes redondeados con la tabla */
+            overflow: hidden; 
         }
 
-        /* Estilos personalizados para la tabla */
         .table > thead {
             background-color: #f8f9fa;
             color: #495057;
@@ -49,12 +48,10 @@
             color: #243447;
         }
         
-        /* Insignias (Badges) personalizadas */
         .badge-inteligente { background-color: #e0ebff; color: #3b5a9a; border: 1px solid #3b5a9a; }
         .badge-fijo { background-color: #e2e3e5; color: #383d41; border: 1px solid #6c757d; }
         .badge-mantenimiento { background-color: #fff3cd; color: #856404; border: 1px solid #ffc107; }
         
-        /* Botones de acción */
         .btn-action {
             width: 35px;
             height: 35px;
@@ -73,9 +70,7 @@
 </head>
 <body>
 
-    <!-- ========================================== -->
     <!-- CABECERA -->
-    <!-- ========================================== -->
     <nav class="navbar navbar-dark navbar-custom py-3 py-md-4">
         <div class="container-fluid px-3 px-md-5">
             <div class="d-flex justify-content-between align-items-center w-100">
@@ -83,7 +78,8 @@
                     <h1 class="fw-bold mb-0 fs-2">Mis Prototipos</h1>
                 </div>
                 <div>
-                    <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-light px-3 px-md-4">
+                    <!-- Botón "Volver" dinámico -->
+                    <a href="{{ auth()->check() && auth()->user()->role === 'user' ? route('user.dashboard') : route('admin.dashboard') }}" class="btn btn-outline-light px-3 px-md-4">
                         <i class="bi bi-arrow-left me-1"></i> <span class="d-none d-sm-inline">Volver</span>
                     </a>
                 </div>
@@ -91,12 +87,9 @@
         </div>
     </nav>
 
-    <!-- ========================================== -->
     <!-- CONTENIDO PRINCIPAL -->
-    <!-- ========================================== -->
     <div class="container-fluid px-3 px-md-5 py-4 mt-2">
         
-        <!-- INSTRUCCIONES Y BOTÓN DE ACCIÓN RÁPIDA -->
         <div class="row mb-4 align-items-center">
             <div class="col-12 col-md-8">
                 <p class="fs-5 fw-bold text-dark mb-0">
@@ -104,18 +97,20 @@
                 </p>
             </div>
             <div class="col-12 col-md-4 text-md-end mt-3 mt-md-0">
-                <!-- Botón para ir rápido a registrar uno nuevo -->
+                
+                {{-- REGLA 1 ACTIVA: Solo el Administrador ve el botón "Nuevo Prototipo" --}}
+                @if(auth()->check() && auth()->user()->role === 'admin')
                 <a href="{{ route('prototipo.crear') }}" class="btn btn-primary px-4" style="background-color: #3b5a9a; border-color: #3b5a9a;">
                     <i class="bi bi-plus-lg me-1"></i> Nuevo Prototipo
                 </a>
+                @endif
+
             </div>
         </div>
 
-        <!-- TARJETA DE LA TABLA -->
         <div class="row">
             <div class="col-12">
                 <div class="table-card p-0">
-                    <!-- table-responsive asegura que en celular se pueda hacer scroll lateral -->
                     <div class="table-responsive">
                         <table class="table table-hover mb-0">
                             <thead>
@@ -129,14 +124,12 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- ITERACIÓN DE DATOS SIMULADOS (BLADE) -->
                                 @foreach($prototipos as $prototipo)
                                 <tr>
                                     <td class="fw-bold text-muted">00{{ $prototipo['id'] }}</td>
                                     <td class="fw-bold">{{ $prototipo['nombre'] }}</td>
                                     <td class="font-monospace text-muted">{{ $prototipo['ip'] }}</td>
                                     
-                                    <!-- BADGE DE MODO -->
                                     <td>
                                         @if($prototipo['modo'] == 'inteligente')
                                             <span class="badge badge-inteligente px-3 py-2 rounded-pill"><i class="bi bi-cpu me-1"></i> Inteligente</span>
@@ -147,7 +140,6 @@
                                         @endif
                                     </td>
 
-                                    <!-- BADGE DE ESTADO DE CONEXIÓN -->
                                     <td>
                                         @if($prototipo['estado'] == 'online')
                                             <div class="d-flex align-items-center text-success fw-bold">
@@ -161,20 +153,30 @@
                                         <span class="text-muted" style="font-size: 0.8rem;">{{ $prototipo['ultima_conexion'] }}</span>
                                     </td>
 
-                                    <!-- BOTONES DE ACCIÓN -->
-                                    <td class="text-center">
-                                        <!-- Forzar Manual (Control) -->
-                                        <button class="btn btn-outline-primary btn-action" data-bs-toggle="tooltip" title="Control Manual">
-                                            <i class="bi bi-joystick"></i>
+                                    <td class="text-center text-nowrap">
+                                        
+                                        <!-- 1. Monitoreo / Estado (Dinámico según rol) -->
+                                        <button class="btn btn-outline-primary btn-action" data-bs-toggle="tooltip" title="{{ auth()->check() && auth()->user()->role === 'admin' ? 'Control Manual' : 'Ver Estado en Vivo' }}">
+                                            <i class="bi {{ auth()->check() && auth()->user()->role === 'admin' ? 'bi-joystick' : 'bi-display' }}"></i>
                                         </button>
-                                        <!-- Editar -->
+                                        
+                                        <!-- 2. Historial del Semáforo (Visible para todos) -->
+                                        <button class="btn btn-outline-info btn-action" data-bs-toggle="tooltip" title="Ver Historial">
+                                            <i class="bi bi-clock-history"></i>
+                                        </button>
+
+                                        {{-- REGLA 2 ACTIVA: Solo el Administrador puede Editar y Eliminar --}}
+                                        @if(auth()->check() && auth()->user()->role === 'admin')
+                                        <!-- 3. Editar -->
                                         <button class="btn btn-outline-secondary btn-action" data-bs-toggle="tooltip" title="Editar Tiempos/IP">
                                             <i class="bi bi-pencil-square"></i>
                                         </button>
-                                        <!-- Eliminar -->
+                                        <!-- 4. Eliminar -->
                                         <button class="btn btn-outline-danger btn-action" data-bs-toggle="tooltip" title="Dar de baja">
                                             <i class="bi bi-trash3"></i>
                                         </button>
+                                        @endif
+
                                     </td>
                                 </tr>
                                 @endforeach
@@ -190,7 +192,6 @@
     <!-- SCRIPTS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Inicializar los Tooltips para los botones de acción
         document.addEventListener('DOMContentLoaded', function () {
             var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
             var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
